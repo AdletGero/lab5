@@ -25,16 +25,23 @@ public class UserDetailsImpl implements UserDetails {
     private String login;
     private String password;
     private final LocalDate date = LocalDate.now();
+    private String email;
     private List<Task> tasks;
+    private String image_url;
     private  Collection<? extends GrantedAuthority> Authorities;
 
-    public UserDetailsImpl(Collection<? extends GrantedAuthority> authorities, List<Task> tasks, String password, String login, String name, Long id) {
+    public UserDetailsImpl(Collection<? extends GrantedAuthority> authorities,
+                           List<Task> tasks, String password,
+                           String login, String name, Long id, String email,
+                           String image_url) {
         this.Authorities = authorities;
         this.tasks = tasks;
         this.password = password;
         this.login = login;
         this.name = name;
         this.id = id;
+        this.image_url = image_url;
+        this.email = email;
     }
     public static UserDetailsImpl build(User user){
         List<GrantedAuthority> authorityList = List.of(new SimpleGrantedAuthority(user.getRole().name()));
@@ -44,7 +51,9 @@ public class UserDetailsImpl implements UserDetails {
                 user.getPassword(),
                 user.getLogin(),
                 user.getName(),
-                user.getId()
+                user.getId(),
+                user.getEmail(),
+                user.getImage_url()
         );
     }
 

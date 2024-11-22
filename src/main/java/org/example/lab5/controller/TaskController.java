@@ -39,15 +39,19 @@ public class TaskController {
     @Autowired
     TaskRepository taskRepository;
 
-    @GetMapping("/add")
+    @GetMapping("add")
     public String showAddTask(Model model){
         model.addAttribute("categories", categoryService.findAllCategories());
         model.addAttribute("task", new Task());
+        model.addAttribute("users", userRepository.findAll());
         return "add";
     }
-    @PostMapping("/add")
-    public String createTask(@AuthenticationPrincipal UserDetails userDetails,  @RequestParam("categoryId") Long categoryId,  Task task) {
-        User currentUser = userRepository.findByLogin(userDetails.getUsername())
+    @PostMapping("add")
+    public String createTask(@AuthenticationPrincipal UserDetails userDetails,
+                             @RequestParam("categoryId") Long categoryId,
+                             Task task,
+                             @RequestParam("userId") Long userId) {
+        User currentUser = userRepository.findById(userId)
                 .orElseThrow(()-> new UsernameNotFoundException("Unknown login"));
         task.setUser(currentUser);
 
@@ -56,7 +60,7 @@ public class TaskController {
 
         task.setCategory(category);
         taskService.saveTask(task);
-        return "add";
+        return "redirect:/admin/main";
     }
     @GetMapping("/edit/{id}")
     public String showEditTaskForm(@PathVariable("id") Long id, Model model) {

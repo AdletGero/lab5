@@ -7,6 +7,10 @@ import org.example.lab5.Service.CategoryService;
 import org.example.lab5.Service.TaskService;
 import org.example.lab5.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -30,6 +34,8 @@ public class MainController {
     @GetMapping("/")
     public String main(@RequestParam(value = "status", required = false, defaultValue = "") String status,
                        @RequestParam(value = "categoryId", required = false) Long categoryId,
+                       @RequestParam(value = "search", required = false, defaultValue = "") String search,
+                       @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                        Model model) {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder
                 .getContext()
@@ -37,26 +43,25 @@ public class MainController {
                 .getPrincipal();
         Long userId = userDetails.getId();
 
-        String statusFilter = status.equals("All") || status.isEmpty() ? null : status;
-        List<Task> tasks;
-        if (status == "all" && categoryId == null) {
-            tasks = taskService.findTasksByUserSortedById(userId);
-        } else {
-            tasks = taskRepository.findTasksByFilter(statusFilter, categoryId, userId);
-        }
+        // Устанавливаем фильтры
+        String statusFilter = status.equalsIgnoreCase("all") || status.isEmpty() ? null : status;
 
-        model.addAttribute("tasks", tasks);
+        // Создаем пагинацию
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").ascending());
+        Page<Task> tasksPage = taskService.findTasksWithPaginationAndSearch(statusFilter, categoryId, userId, search, pageable);
+
+        // Добавляем атрибуты в модель
+        model.addAttribute("tasks", tasksPage.getContent());
         model.addAttribute("categories", categoryService.findAllCategories());
-        model.addAttribute("status", "all");
-        model.addAttribute("category", null);
+        model.addAttribute("status", status);
+        model.addAttribute("category", categoryId);
+        model.addAttribute("searchQuery", search);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", tasksPage.getTotalPages());
         return "main";
     }
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/main")
-    public String getAllTasks(Model model) {
-        model.addAttribute("tasks", taskService.findAllTasks());
-        return "main";
-    }
+
+
 
 
 

@@ -6,6 +6,7 @@ import org.example.lab5.Repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,5 +21,8 @@ public class UserService {
     public User findById(Long id){
         Optional<User> user = userRepository.findById(id);
         return user.orElse(null);
+    }
+    public List<User> findAllUsers(){
+        return userRepository.findAll();
     }
 }

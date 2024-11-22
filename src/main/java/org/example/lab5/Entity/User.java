@@ -37,6 +37,12 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private ERole role = ERole.ROLE_USER;
+
+    @Column(nullable = false, length = 255)
+    private String email;
+
+    private String image_url;
+
     @PrePersist
     protected void onCreate() {
         this.date = LocalDate.now();
