@@ -15,14 +15,11 @@ public class EmailService {
     private final String password = "dchfubdczsdrujfr";
 
     public void sendEmail(String to, String subject, String messageContent) {
-        // Настройки SMTP сервера
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.port", port);
-
-        // Создание сессии
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -31,7 +28,6 @@ public class EmailService {
         });
 
         try {
-            // Создание сообщения
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(username));
             message.setRecipients(

@@ -6,6 +6,8 @@
 </head>
 <body>
 <h1 th:text=" 'Welcome back, ' + ${#authentication.getPrincipal().getName()}+'!' "></h1>
+<img class="user-photo" th:src="${default}"
+     alt="User Photo" width="150" height="150"/>
 <h2>Your Tasks:</h2>
 <form th:action="@{/}" method="get">
     <label for="status">Status:</label>
@@ -73,6 +75,7 @@
     <form th:action="@{/logout}" method="post">
         <button class="top-right-button" type="submit">Logout</button>
     </form>
+    <a th:href="@{/profile}" class="profile-button">Profile</a>
 </div>
 </body>
 </html>

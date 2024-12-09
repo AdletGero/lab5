@@ -51,16 +51,13 @@ public class TaskController {
                              @RequestParam("categoryId") Long categoryId,
                              Task task,
                              @RequestParam("userId") Long userId) {
-        User currentUser = userRepository.findById(userId)
-                .orElseThrow(()-> new UsernameNotFoundException("Unknown login"));
-        task.setUser(currentUser);
-
-        Category category = categoryService.findCategoryById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid category Id:" + categoryId));
-
-        task.setCategory(category);
-        taskService.saveTask(task);
+      User currUser = userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("uknownk login"));
+       task.setUser(currUser);
+       Category cat = categoryService.findCategoryById(categoryId).orElseThrow(()-> new IllegalArgumentException("uknown category"));
+       task.setCategory(cat);
+       taskService.saveTask(task);
         return "redirect:/admin/main";
+
     }
     @GetMapping("/edit/{id}")
     public String showEditTaskForm(@PathVariable("id") Long id, Model model) {
@@ -68,10 +65,10 @@ public class TaskController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid task Id:" + id));
         model.addAttribute("task", task);
         model.addAttribute("categories", categoryService.findAllCategories());
-        return "edit";  // предполагается, что шаблон находится в resources/templates/edit.html
+        return "edit";
     }
 
-    // Метод для сохранения отредактированной задачи
+   
     @PostMapping("/edit/{id}")
     public String editTask(@PathVariable("id") Long id, @ModelAttribute("task") Task task, @AuthenticationPrincipal UserDetails userDetails) {
         task.setId(id);
